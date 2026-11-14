@@ -637,111 +637,62 @@ print(st.is_empty())     # True
 把上面所有东西串起来，写一个完整的小程序。这段代码不长，但用到了变量、列表、字典、循环、判断、函数、类——**如果你能独立默写出来，这一篇就过关了**。
 
 ```python
-"""学生成绩单：添加学生、统计平均分、找出最高分并打印报告。"""
-
-from dataclasses import dataclass
-
-PASS_SCORE = 60  # 及格线，改这里即可，不用到处找魔法数字
-
-
-@dataclass(frozen=True)
-class Student:
-    """一条学生成绩记录。is_pass 由 score 实时派生，避免数据不一致。"""
-
-    name: str
-    score: float
-
-    @property
-    def is_pass(self) -> str:
-        return "及格" if self.score >= PASS_SCORE else "不及格"
-
-
 class ScoreSheet:
-    def __init__(self) -> None:
-        self.students: list[Student] = []
+    def __init__(self):
+        self.students = []          # 列表里装字典
 
-    def add_student(self, name: str, score: float) -> None:
-        if not name.strip():
-            raise ValueError("姓名不能为空")
-        if not 0 <= score <= 100:
-            raise ValueError(f"分数必须在 0~100 之间，收到：{score}")
-        self.students.append(Student(name.strip(), score))
+    def add(self, name, score):
+        self.students.append({"name": name, "score": score})
 
-    def counts(self) -> int:
-        return len(self.students)
+    def average(self):
+        if len(self.students) == 0:
+            return 0
+        total = 0
+        for s in self.students:
+            total += s["score"]
+        return total / len(self.students)
 
-    # 支持 len(sheet) / for stu in sheet，比 counts() 更 Pythonic
-    def __len__(self) -> int:
-        return len(self.students)
-
-    def __iter__(self):
-        return iter(self.students)
-
-    def __str__(self) -> str:
-        return f"ScoreSheet({self.students})"
-
-    def average(self) -> float | None:
-        """返回平均分（float），没有学生时返回 None。格式化交给展示层。"""
-        if not self.students:
+    def best(self):
+        if len(self.students) == 0:
             return None
-        return sum(stu.score for stu in self.students) / len(self.students)
+        top = self.students[0]
+        for s in self.students:
+            if s["score"] > top["score"]:
+                top = s
+        return top
 
-    def best(self) -> dict | None:
-        """返回 {"score": 最高分, "stu": [姓名, ...]}，没有学生时返回 None。"""
-        if not self.students:
-            return None
-        top = max(stu.score for stu in self.students)
-        top_stu = [stu.name for stu in self.students if stu.score == top]
-        return {"score": top, "stu": top_stu}
-
-    def report(self) -> None:
-        # 用 self，而不是全局变量 sheet，多实例时才不会串数据
-        average = self.average()
-        if average is None:
-            print(f"一共有{self.counts()}名学生，尚无平均分")
-        else:
-            print(f"一共有{self.counts()}名学生，平均分：{average:.1f}")
-
-        for stu in self.students:
-            print(f"\t{stu.name}：{stu.score}，{stu.is_pass}")
-
-        best = self.best()  # 只算一次，不再重复遍历
-        if best is None:
-            print("没有最高分")
-        else:
-            print(f"最高分是：{best['score']}\t" + "、".join(best["stu"]))
-
-        print("\n")
+    def report(self):
+        print(f"共 {len(self.students)} 人，平均分 {self.average():.1f}")
+        for s in self.students:
+            mark = "及格" if s["score"] >= 60 else "不及格"
+            print(f"  {s['name']}: {s['score']} ({mark})")
+        top = self.best()
+        print(f"最高分：{top['name']} {top['score']}")
 
 
-if __name__ == "__main__":
-    sheet = ScoreSheet()
-    for name, score in [
-        ("小明", 99),
-        ("周杰伦", 99),
-        ("小红", 98),
-        ("小刚", 97),
-        ("小亮", 95.5),
-        ("小丑", 15.5),
-    ]:
-        sheet.add_student(name, score)
-    sheet.report()
-
+sheet = ScoreSheet()
+sheet.add("小明", 87)
+sheet.add("小红", 55)
+sheet.add("小刚", 92)
+sheet.report()
 ```
 
 运行结果：
 
 ```text
-一共有6名学生，平均分：84.0
-        小明：99，及格
-        周杰伦：99，及格
-        小红：98，及格
-        小刚：97，及格
-        小亮：95.5，及格
-        小丑：15.5，不及格
-最高分是：99    小明、周杰伦
+共 3 人，平均分 78.0
+  小明: 87 (及格)
+  小红: 55 (不及格)
+  小刚: 92 (及格)
+最高分：小刚 92
 ```
 
+几个值得停一下看的地方：
+
+1. `self.students` 是一个列表，里面每个元素是字典。**数据结构就是这样一层套一层搭出来的**，后面树、图也是这个思路。
+2. `report` 里出现了 `f"...{s['score']}..."`——f-string 里用字典的键，**外层用双引号、内层用单引号**，不然引号会打架。
+3. `mark = "及格" if s["score"] >= 60 else "不及格"` 是"条件表达式"，一行写完 if-else。看到别慌，它就是 `if...else` 的简写。
+4. `best()` 用的是"打擂台"：先假设第一个是冠军，后面每个都来挑战，赢了就换人。这个套路在手写代码题里出现频率极高，第 2 篇会用它求最大值。
 
 ---
 
