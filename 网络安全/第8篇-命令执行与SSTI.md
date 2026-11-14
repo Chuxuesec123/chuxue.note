@@ -2,6 +2,7 @@
 title: 第 8 篇：命令执行与 SSTI
 layout: article
 ---
+{% raw %}
 # 第 8 篇：命令执行与 SSTI——让现有代码替我们干活
 
 前一篇是"把代码放进去"，这一篇是"让服务器上已有的代码替我们执行"：
@@ -521,5 +522,8 @@ return template.render(name=name)
 - [ ] 知道 SRC 里只证明表达式执行，不 dump 配置、不反弹 shell。
 
 ---
+
+
+{% endraw %}
 
 **下一篇：[《反序列化与组件漏洞》](第9篇-反序列化与组件漏洞.md)**：命令执行和 SSTI 是"应用层"的代码执行；反序列化是"数据变成对象"时的执行，Log4j、Fastjson、Shiro、ThinkPHP 这些组件漏洞则是"依赖里的地雷"。那篇讲 PHP/Java 反序列化基础、CommonCollections 链、JNDI 注入、Log4Shell 的复现与检测。
