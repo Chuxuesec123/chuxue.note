@@ -7,11 +7,9 @@ layout: article
 
 今天要带你把我家铲屎官的 VS Code，从"灰扑扑的写字板"改造成**会发光、有背景、点一下还带弹跳**的赛博小窝。
 
-四步，一步步来。命令我都写全了，截图位置也留好了，你只管照着做；翻车了就把猫猫抓过来揉一顿（喵）。
+四步，一步步来，命令和截图都在下面。
 
 不过先说清楚：这套美化会让插件去改 VS Code 的核心文件，好看是真的好看，风险也是真的。**文末那段「翻车预警」，建议动手前先看一眼。**
-
-
 
 ## 🎨 第一步：让代码自己发光
 **插件：SynthWave '84（作者 Robb Owen）**
@@ -37,10 +35,7 @@ SynthWave '84 默认只给你配色，**霓虹光晕要手动开**。
 
 数字从 0 到 1，0 是全透明，默认 0.45。**改完要再执行一次 **`Enable Neon Dreams`** 才会生效。** 别调太高，猫猫眼睛会瞎。
 
-<!-- 这是一张图片，ocr 内容为： -->
 ![](https://cdn.nlark.com/yuque/0/2026/png/55623416/1794584644587-c3afa843-58f5-4f64-a1cf-b7a75a2a6a05.png)
-
-
 
 ## 🖼️ 第二步：给整个窗口铺上背景
 **插件：VS Code - Background Cover**
@@ -58,10 +53,7 @@ SynthWave '84 默认只给你配色，**霓虹光晕要手动开**。
 
 看看本喵的背景图：
 
-<!-- 这是一张图片，ocr 内容为： -->
 ![](https://cdn.nlark.com/yuque/0/2026/png/55623416/1794584695940-7bbcbb59-eb91-4d51-98a1-81f4edbd9ac5.png)
-
-
 
 ## 🐾 第三步：让文件图标也发光
 **插件：Seti Folder（图标主题）+ Custom UI Style（样式注入）**
@@ -84,10 +76,7 @@ SynthWave '84 默认只给你配色，**霓虹光晕要手动开**。
 
 原理很简单：Seti Folder 给每种文件类型分配了颜色，`currentColor` 拿到这个颜色，`drop-shadow` 就照着这个颜色晕开一圈光。想更亮就把 `2.5px` 改大，猫猫建议别超过 `4px`。
 
-<!-- 这是一张图片，ocr 内容为： -->
 ![](https://cdn.nlark.com/yuque/0/2026/png/55623416/1794584751410-6f51b5bd-c857-440a-a65b-e581e4d4a3f1.png)
-
-
 
 ## ✨ 第四步：让界面动起来
 **插件：VSCode Animations**
@@ -107,10 +96,7 @@ SynthWave '84 默认只给你配色，**霓虹光晕要手动开**。
 
 **猫猫提示**：如果你觉得光标动画怪怪的，去设置里搜 `Editor: Cursor Blinking`，改成 `smooth`，会顺眼很多。
 
-<!-- 这是一张图片，ocr 内容为： -->
 ![](https://cdn.nlark.com/yuque/0/2026/gif/55623416/1794585419987-04be4e3b-cd88-43a4-aeea-96978ca810dd.gif)
-
-
 
 ## 🐱 猫猫的翻车预警
 这套方案里，**SynthWave '84 的霓虹、Background Cover、Custom UI Style、VSCode Animations（靠 Custom UI Style 注入）**，都会碰到 VS Code 的核心文件。猫猫的建议是：
@@ -120,4 +106,4 @@ SynthWave '84 默认只给你配色，**霓虹光晕要手动开**。
 3. **VS Code 每次更新后**，发光、背景、图标光晕、动画都可能失效，重新执行对应的启用命令，或者重新设置一遍。
 4. 真打不开的时候，别急着乱改名：SynthWave 用 `Synthwave '84: Disable Neon Dreams` 关掉；Background Cover 才走 `workbench.desktop.main.js.bak` 那条路；Custom UI Style 有 `Custom UI Style: Rollback`。**别拿旧版本的备份，去覆盖刚更新完的文件。**
 
-好啦，去改吧。改完记得回来给猫猫看看你的赛博小窝长什么样🐾（喵）
+改完重启一下 VS Code，就是上面那样了。真翻车了，按第 4 条那三个命令往回退，安装目录里的 `.bak` 文件别删。

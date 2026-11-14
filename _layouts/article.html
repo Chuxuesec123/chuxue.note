@@ -2,15 +2,15 @@
 layout: default
 ---
 {%- comment -%}
-  文章页骨架：正文一栏 + 右侧「本文大纲」。
+  文章页骨架：正文一栏 + 右侧「本篇目录」。
   大纲内容由下面的脚本从正文的 h2 / h3 现生成，不用手写目录；
   窄屏（< 1100px）时大纲变成正文上方的可折叠卡片。
 {%- endcomment -%}
 <div class="article-shell">
 
   <details class="article-toc" id="article-toc" open>
-    <summary class="article-toc-summary">本文大纲</summary>
-    <nav class="article-toc-body" aria-label="本文大纲">
+    <summary class="article-toc-summary">本篇目录</summary>
+    <nav class="article-toc-body" aria-label="本篇目录">
       <ol class="article-toc-list" id="article-toc-list"></ol>
     </nav>
   </details>
@@ -48,7 +48,7 @@ layout: default
 </script>
 
 {%- comment -%}
-  本文大纲：从正文 h2 / h3 生成两级目录，点击跳转（锚点用 kramdown 生成的 id），
+  本篇目录：从正文 h2 / h3 生成两级目录，点击跳转（锚点用 kramdown 生成的 id），
   滚动时高亮当前所在小节。脚本挂了也不影响正文 —— 大纲只是空列表而已。
 {%- endcomment -%}
 <script>
