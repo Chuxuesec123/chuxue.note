@@ -12,6 +12,15 @@ plugins:
   - jekyll-seo-tag
   - jekyll-feed
 
+# 网络安全系列里满是 {{7*7}}、{{['id']|map(...)}} 这类 payload。
+# Liquid 会把它们当成变量/过滤器去解析（第 8 篇就因此构建失败），
+# 所以整个目录关闭 Liquid；正文里用不到任何 Liquid 语法。
+defaults:
+  - scope:
+      path: "网络安全"
+    values:
+      render_with_liquid: false
+
 # 阅读顺序：只用来生成每篇底部的「上一篇 / 下一篇」。
 # 顶部导航不走这里 —— 导航写在 README.md 里（也就是站点首页）。
 # 新增文章时：在 README 的表格里加一行，再在这里加一项（加在这里才会出现在上下篇里）。

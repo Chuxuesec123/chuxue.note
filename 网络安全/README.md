@@ -1,6 +1,7 @@
 ---
 title: 从零到 SRC：Web 漏洞挖掘实战
 layout: article
+permalink: /网络安全/
 ---
 # 从零到 SRC：Web 漏洞挖掘实战
 
