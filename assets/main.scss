@@ -2,6 +2,7 @@
 # 全站样式：在 minima 之上做「沉浸式阅读」定制
 #   1) 顶栏极简：只有站点名 + 一个「← 目录」按钮（导航在 README 里）
 #   2) 正文按中文长文优化：字体栈、行长、行距、标题层级、代码、表格、引用
+#   3) 文章页右侧常驻「本文大纲」：正文 760px + 大纲 212px，窄屏收成可折叠卡片
 # 先声明变量再 @import "minima"：minima 的变量是 !default，先定义就会被采用
 ---
 
@@ -118,6 +119,197 @@ html {
 .post {
   max-width: $reading-width;
   margin: 0 auto;
+}
+
+/* =========================================================
+   文章页骨架：正文一栏（760px）+ 右侧「本文大纲」（212px）
+   < 1100px 时大纲退化成正文上方的可折叠卡片
+   ========================================================= */
+$shell-width: 1040px; // 760 + 48 间隙 + 212
+$toc-width: 212px;
+
+.article-shell {
+  // 撑到 1040px 并保持居中：百分比 margin 相对 wrapper 内容宽度算，
+  // 负值把左右两侧同时顶出去，比用 100vw 更稳（100vw 含滚动条宽度）
+  width: $shell-width;
+  max-width: none;
+  margin-left: calc((100% - #{$shell-width}) / 2);
+}
+
+@media (min-width: 1100px) {
+  .article-shell {
+    display: grid;
+    grid-template-columns: minmax(0, $reading-width) $toc-width;
+    column-gap: 48px;
+    align-items: start;
+  }
+
+  .article-main {
+    grid-area: 1 / 1;
+    min-width: 0;
+  }
+
+  // 大纲跟着滚动，一直在视野右上角
+  .article-toc {
+    grid-area: 1 / 2;
+    position: sticky;
+    top: 84px;
+    margin: 0;
+    max-height: calc(100vh - 130px);
+    padding-left: 1px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+}
+
+@media (max-width: 1099px) {
+  .article-shell {
+    width: auto;
+    margin-left: 0;
+  }
+}
+
+/* ---------- 本文大纲 ---------- */
+.article-toc {
+  margin: 0 0 24px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: $grey-color;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.article-toc-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: $text-color;
+  background-color: #f7f8fa;
+  border: 1px solid $ui-border;
+  border-radius: 8px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  // 折叠箭头（窄屏才有意义）
+  &::before {
+    content: '▸';
+    font-size: 11px;
+    line-height: 1;
+    color: $grey-color;
+    transition: transform 0.15s ease;
+  }
+}
+
+.article-toc[open] .article-toc-summary::before {
+  transform: rotate(90deg);
+}
+
+// 桌面端：大纲常开，标题只是个小标签，不像按钮
+@media (min-width: 1100px) {
+  .article-toc-summary {
+    margin: 0 0 10px;
+    padding: 0 0 8px 11px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: $grey-color;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid $ui-border;
+    border-radius: 0;
+    cursor: default;
+    pointer-events: none;
+
+    &::before {
+      display: none;
+    }
+  }
+}
+
+.article-toc-body {
+  padding: 9px 2px 2px;
+}
+
+// 窄屏展开时别把正文顶到屏幕外，超长的大纲在卡片内部滚动
+@media (max-width: 1099px) {
+  .article-toc-body {
+    max-height: 55vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+}
+
+@media (min-width: 1100px) {
+  .article-toc-body {
+    padding: 0;
+  }
+}
+
+.article-toc-list,
+.toc-sub {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.toc-link {
+  display: block;
+  padding: 4px 8px;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
+  color: #3d4652;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-radius: 6px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+
+  &:hover,
+  &:focus {
+    color: $text-color;
+    background-color: #f3f5f8;
+    text-decoration: none;
+  }
+}
+
+// h3 挂在 h2 下面，缩进 + 细竖线
+.toc-sub {
+  margin: 0 0 7px 9px;
+  padding-left: 7px;
+  border-left: 1px solid $ui-border;
+
+  .toc-link {
+    padding: 3px 8px;
+    font-size: 12.5px;
+    font-weight: 400;
+    color: $grey-color;
+  }
+}
+
+.toc-link.is-active {
+  color: $brand-color;
+  background-color: #eef4ff;
+}
+
+// 窄屏卡片宽度够，别把标题截断
+@media (max-width: 1099px) {
+  .toc-link {
+    white-space: normal;
+  }
 }
 
 /* =========================================================
@@ -577,10 +769,17 @@ html {
 @media print {
   .site-header,
   .site-footer,
+  .article-toc,
   .post-nav,
   .back-to-index,
   .read-progress {
     display: none;
+  }
+
+  .article-shell {
+    display: block;
+    width: auto;
+    margin-left: 0;
   }
 
   .post {

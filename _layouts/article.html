@@ -1,15 +1,32 @@
 ---
 layout: default
 ---
-<article class="post">
-  <div class="post-content">
-    {{ content }}
+{%- comment -%}
+  文章页骨架：正文一栏 + 右侧「本文大纲」。
+  大纲内容由下面的脚本从正文的 h2 / h3 现生成，不用手写目录；
+  窄屏（< 1100px）时大纲变成正文上方的可折叠卡片。
+{%- endcomment -%}
+<div class="article-shell">
+
+  <details class="article-toc" id="article-toc" open>
+    <summary class="article-toc-summary">本文大纲</summary>
+    <nav class="article-toc-body" aria-label="本文大纲">
+      <ol class="article-toc-list" id="article-toc-list"></ol>
+    </nav>
+  </details>
+
+  <div class="article-main">
+    <article class="post">
+      <div class="post-content">
+        {{ content }}
+      </div>
+    </article>
+
+    {%- include article-nav.html -%}
+
+    <p class="back-to-index"><a href="{{ "/" | relative_url }}">↑ 返回目录</a></p>
   </div>
-</article>
-
-{%- include article-nav.html -%}
-
-<p class="back-to-index"><a href="{{ "/" | relative_url }}">↑ 返回目录</a></p>
+</div>
 
 {%- comment -%} 顶部阅读进度条：纯装饰，不影响阅读，脚本失败也不影响正文 {%- endcomment -%}
 <div class="read-progress" id="read-progress" aria-hidden="true"></div>
@@ -27,5 +44,110 @@ layout: default
     window.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update);
     update();
+  })();
+</script>
+
+{%- comment -%}
+  本文大纲：从正文 h2 / h3 生成两级目录，点击跳转（锚点用 kramdown 生成的 id），
+  滚动时高亮当前所在小节。脚本挂了也不影响正文 —— 大纲只是空列表而已。
+{%- endcomment -%}
+<script>
+  (function () {
+    var toc = document.getElementById('article-toc');
+    var list = document.getElementById('article-toc-list');
+    var article = document.querySelector('.post-content');
+    if (!toc || !list || !article) return;
+
+    var headings = [].slice.call(article.querySelectorAll('h2, h3'));
+    if (headings.length < 2) {          // 太短的文章不显示大纲
+      toc.parentNode.removeChild(toc);
+      return;
+    }
+
+    var links = [];
+    var lastH2Item = null;
+
+    headings.forEach(function (h, i) {
+      if (!h.id) h.id = 'section-' + (i + 1);   // 极少数标题没 id 时兜底
+
+      var item = document.createElement('li');
+      item.className = 'toc-item toc-' + h.tagName.toLowerCase();
+
+      var link = document.createElement('a');
+      link.className = 'toc-link';
+      link.href = '#' + h.id;
+      link.textContent = h.textContent;
+      link.title = h.textContent;      // 侧栏窄，长标题会被省略号截断，悬浮看全文
+      item.appendChild(link);
+
+      var parent = list;
+      if (h.tagName === 'H3' && lastH2Item) {   // h3 挂到上一个 h2 下面
+        var sub = lastH2Item.querySelector('.toc-sub');
+        if (!sub) {
+          sub = document.createElement('ol');
+          sub.className = 'toc-sub';
+          lastH2Item.appendChild(sub);
+        }
+        parent = sub;
+      }
+      parent.appendChild(item);
+
+      if (h.tagName === 'H2') lastH2Item = item;
+      links.push({ heading: h, link: link });
+    });
+
+    /* ---- 滚动高亮当前小节 ---- */
+    var active = -1;
+    function sync() {
+      var line = 110;                       // 吸顶栏高度 + 余量
+      var idx = 0;
+      for (var i = 0; i < links.length; i++) {
+        if (links[i].heading.getBoundingClientRect().top - line <= 0) idx = i;
+      }
+      if (window.innerHeight + window.pageYOffset >= document.body.scrollHeight - 4) {
+        idx = links.length - 1;             // 读到底就高亮最后一项
+      }
+      if (idx === active) return;
+      active = idx;
+      for (var j = 0; j < links.length; j++) {
+        links[j].link.className = 'toc-link' + (j === idx ? ' is-active' : '');
+      }
+      // 侧栏内部太长时，把当前项滚进可视范围（不会带动页面滚动）
+      if (toc.scrollHeight > toc.clientHeight + 4 && links[idx].link.scrollIntoView) {
+        links[idx].link.scrollIntoView({ block: 'nearest' });
+      }
+    }
+
+    var ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(function () { ticking = false; sync(); });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+
+    /* ---- 窄屏默认收起，桌面端常开 ---- */
+    var wide = window.matchMedia ? window.matchMedia('(min-width: 1100px)') : null;
+    function applyMode() {
+      if (!toc.isConnected) return;
+      if (wide && wide.matches) toc.setAttribute('open', '');
+      else if (wide && !toc.dataset.touched) toc.removeAttribute('open');
+    }
+    applyMode();
+    if (wide) {
+      if (wide.addEventListener) wide.addEventListener('change', applyMode);
+      else if (wide.addListener) wide.addListener(applyMode);
+    }
+    toc.addEventListener('toggle', function () { toc.dataset.touched = '1'; });
+    toc.addEventListener('click', function (e) {
+      // 窄屏点完标题顺手收起卡片，正文马上回到眼前
+      var link = e.target;
+      if (link && link.classList && link.classList.contains('toc-link') && wide && !wide.matches) {
+        toc.removeAttribute('open');
+      }
+    });
+
+    sync();
   })();
 </script>
