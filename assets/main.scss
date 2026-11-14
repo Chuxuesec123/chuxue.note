@@ -1,0 +1,187 @@
+---
+# 先引入 minima，再在它上面做"沉浸式阅读"的微调
+---
+
+@import "minima";
+
+/* ---------- 顶部导航：吸顶 + 自动折行 + 当前页高亮 ---------- */
+.site-header {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background-color: $background-color;
+}
+
+.site-header .wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: $spacing-unit * 0.6;
+
+  // minima 的 %clearfix 会给 .wrapper 加一个 ::after，flex 下会多占一个 gap
+  &:after {
+    display: none;
+  }
+}
+
+.site-title {
+  float: none;
+  padding: 10px 0;
+  line-height: 1.4;
+}
+
+.site-nav {
+  float: none;
+  padding: 4px 0;
+
+  .trigger {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    column-gap: 14px;
+    row-gap: 2px;
+  }
+
+  .page-link {
+    display: inline-block;
+    padding: 2px 0;
+    font-size: 15px;
+    line-height: 1.6;
+    white-space: nowrap;
+    // 预留同样的下边框，避免切换页面时导航因为多 2px 而抖动
+    border-bottom: 2px solid transparent;
+
+    &:not(:last-child) {
+      margin-right: 0;
+    }
+
+    &.is-active {
+      color: $brand-color;
+      font-weight: 600;
+      border-bottom-color: $brand-color;
+    }
+  }
+
+  // 中等宽度（平板 / 窄窗口）收一点字号，尽量保持单行
+  @include media-query($on-laptop) {
+    .trigger {
+      column-gap: 10px;
+    }
+
+    .page-link {
+      font-size: 13.5px;
+    }
+  }
+
+  @include media-query($on-palm) {
+    padding: 0;
+
+    .trigger {
+      justify-content: flex-end;
+    }
+
+    input:checked ~ .trigger {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      row-gap: 0;
+    }
+
+    .page-link {
+      padding: 6px 10px;
+      font-size: 16px;
+      border-bottom-color: transparent;
+
+      &.is-active {
+        font-weight: 600;
+        border-bottom-color: transparent;
+      }
+    }
+  }
+}
+
+/* ---------- 正文：长文阅读排版 ---------- */
+html {
+  scroll-behavior: smooth;
+}
+
+.post-content,
+.home {
+  font-size: 16px;
+  line-height: 1.8;
+
+  > h1:first-child {
+    margin-top: 0;
+  }
+
+  h2 {
+    margin-top: 2em;
+  }
+
+  h3 {
+    margin-top: 1.6em;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    // 吸顶导航会挡住锚点跳转后的标题
+    scroll-margin-top: 88px;
+  }
+
+  p {
+    margin: 0 0 1em;
+  }
+
+  // 宽表格（比如八大排序总表）允许横向滚动，不撑破版面
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    font-size: 15px;
+  }
+
+  pre {
+    font-size: 13.5px;
+    line-height: 1.65;
+  }
+
+  img {
+    max-width: 100%;
+  }
+}
+
+/* ---------- 每篇底部的上一篇 / 下一篇 ---------- */
+.post-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: $spacing-unit * 0.5;
+  margin: $spacing-unit 0;
+  padding-top: $spacing-unit * 0.6;
+  border-top: 1px solid $grey-color-light;
+
+  .post-nav-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 46%;
+
+    &.post-nav-next {
+      margin-left: auto;
+      text-align: right;
+    }
+  }
+
+  .post-nav-label {
+    font-size: 13px;
+    color: $grey-color;
+  }
+
+  .post-nav-title {
+    font-weight: 600;
+  }
+}
