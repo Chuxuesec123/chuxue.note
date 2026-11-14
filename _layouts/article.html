@@ -1,0 +1,31 @@
+---
+layout: default
+---
+<article class="post">
+  <div class="post-content">
+    {{ content }}
+  </div>
+</article>
+
+{%- include article-nav.html -%}
+
+<p class="back-to-index"><a href="{{ "/" | relative_url }}">↑ 返回目录</a></p>
+
+{%- comment -%} 顶部阅读进度条：纯装饰，不影响阅读，脚本失败也不影响正文 {%- endcomment -%}
+<div class="read-progress" id="read-progress" aria-hidden="true"></div>
+<script>
+  (function () {
+    var bar = document.getElementById('read-progress');
+    if (!bar) return;
+    function update() {
+      var doc = document.documentElement;
+      var max = doc.scrollHeight - window.innerHeight;
+      var ratio = max > 0 ? window.pageYOffset / max : 0;
+      ratio = Math.max(0, Math.min(1, ratio));
+      bar.style.transform = 'scaleX(' + ratio + ')';
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  })();
+</script>

@@ -1,187 +1,590 @@
 ---
-# 先引入 minima，再在它上面做"沉浸式阅读"的微调
+# 全站样式：在 minima 之上做「沉浸式阅读」定制
+#   1) 顶栏极简：只有站点名 + 一个「← 目录」按钮（导航在 README 里）
+#   2) 正文按中文长文优化：字体栈、行长、行距、标题层级、代码、表格、引用
+# 先声明变量再 @import "minima"：minima 的变量是 !default，先定义就会被采用
 ---
+
+$base-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+  "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Source Han Sans SC",
+  Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+$base-font-size: 17px;
+$base-font-weight: 400;
+$base-line-height: 1.85;
+$spacing-unit: 32px;
+
+$text-color: #1f2328;
+$background-color: #ffffff;
+$brand-color: #2563eb;
+$grey-color: #6b7280;
+$grey-color-light: #e6e8ee;
+$grey-color-dark: #111827;
+
+$content-width: 880px;
 
 @import "minima";
 
-/* ---------- 顶部导航：吸顶 + 自动折行 + 当前页高亮 ---------- */
+/* ---------- 自定义变量 ---------- */
+$reading-width: 760px; // 正文行长上限（中文约 40 字一行）
+$ui-border: #e6e8ee;
+$code-bg: #f6f8fa;
+$quote-bg: #f5f8fd;
+// 代码字体：文章里有大量 ASCII 图示（┌─┐│├），必须选「制表符 = 1 个半角、汉字 = 2 个半角」的等宽字体
+// 否则制表符会被渲染成全角，方框直接散架（Noto Sans Mono CJK 就是这样，所以不放进来）。
+$mono-font: "Sarasa Mono SC", "Sarasa Term SC", "Sarasa Fixed SC",
+  "Maple Mono NF CN", "Maple Mono CN", ui-monospace, SFMono-Regular, "SF Mono",
+  Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", "Courier New", monospace;
+
+/* =========================================================
+   顶栏：吸顶、毛玻璃、只有一个目录按钮
+   ========================================================= */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
 .site-header {
   position: -webkit-sticky;
   position: sticky;
   top: 0;
-  z-index: 20;
-  background-color: $background-color;
+  z-index: 30;
+  min-height: 0; // minima 默认留了 60px 高
+  border-top: 0; // 去掉 minima 顶部那条 5px 粗黑边
+  border-bottom: 1px solid $ui-border;
+  background-color: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: saturate(180%) blur(10px);
+  backdrop-filter: saturate(180%) blur(10px);
 }
 
 .site-header .wrapper {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  column-gap: $spacing-unit * 0.6;
+  gap: 16px;
+  min-height: 56px;
 
-  // minima 的 %clearfix 会给 .wrapper 加一个 ::after，flex 下会多占一个 gap
+  // minima 的 %clearfix 会给 .wrapper 加一个 ::after，flex 下是多余节点
   &:after {
     display: none;
   }
 }
 
-.site-title {
+.site-title,
+.site-title:visited {
   float: none;
-  padding: 10px 0;
+  margin: 0;
+  padding: 12px 0;
+  font-size: 17px;
+  font-weight: 600;
   line-height: 1.4;
-}
+  letter-spacing: 0;
+  color: $text-color;
 
-.site-nav {
-  float: none;
-  padding: 4px 0;
-
-  .trigger {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    align-items: center;
-    column-gap: 14px;
-    row-gap: 2px;
-  }
-
-  .page-link {
-    display: inline-block;
-    padding: 2px 0;
-    font-size: 15px;
-    line-height: 1.6;
-    white-space: nowrap;
-    // 预留同样的下边框，避免切换页面时导航因为多 2px 而抖动
-    border-bottom: 2px solid transparent;
-
-    &:not(:last-child) {
-      margin-right: 0;
-    }
-
-    &.is-active {
-      color: $brand-color;
-      font-weight: 600;
-      border-bottom-color: $brand-color;
-    }
-  }
-
-  // 中等宽度（平板 / 窄窗口）收一点字号，尽量保持单行
-  @include media-query($on-laptop) {
-    .trigger {
-      column-gap: 10px;
-    }
-
-    .page-link {
-      font-size: 13.5px;
-    }
-  }
-
-  @include media-query($on-palm) {
-    padding: 0;
-
-    .trigger {
-      justify-content: flex-end;
-    }
-
-    input:checked ~ .trigger {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      row-gap: 0;
-    }
-
-    .page-link {
-      padding: 6px 10px;
-      font-size: 16px;
-      border-bottom-color: transparent;
-
-      &.is-active {
-        font-weight: 600;
-        border-bottom-color: transparent;
-      }
-    }
+  &:hover {
+    color: $brand-color;
+    text-decoration: none;
   }
 }
 
-/* ---------- 正文：长文阅读排版 ---------- */
-html {
-  scroll-behavior: smooth;
+.site-index-link {
+  flex: none;
+  padding: 5px 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: nowrap;
+  color: $grey-color-dark;
+  border: 1px solid $ui-border;
+  border-radius: 999px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+
+  &:hover,
+  &:focus {
+    color: $text-color;
+    background-color: #f2f4f7;
+    border-color: darken($ui-border, 6%);
+    text-decoration: none;
+  }
 }
 
+/* =========================================================
+   页面骨架
+   ========================================================= */
+.page-content {
+  padding: 44px 0 64px;
+  flex: 1;
+}
+
+// 文章：收窄成一条阅读栏并居中
+.post {
+  max-width: $reading-width;
+  margin: 0 auto;
+}
+
+/* =========================================================
+   正文排版（文章页 .post-content 与首页目录 .home 共用）
+   ========================================================= */
 .post-content,
 .home {
-  font-size: 16px;
-  line-height: 1.8;
+  color: #24292f;
+  font-size: 1em;
+  line-height: 1.85;
+  // 中文长文两端对齐，行尾更整齐
+  text-align: justify;
+  text-justify: inter-ideograph;
+  // 只在放不下时断词（别用 word-break: break-word，它会把 GitHub 拆成 GitHu / b）
+  overflow-wrap: break-word;
 
-  > h1:first-child {
+  > :first-child {
     margin-top: 0;
   }
 
-  h2 {
-    margin-top: 2em;
-  }
-
-  h3 {
-    margin-top: 1.6em;
-  }
-
+  /* ---- 标题层级 ---- */
   h1,
   h2,
   h3,
+  h4,
+  h5,
+  h6 {
+    color: #111827;
+    // 吸顶栏会盖住跳转过去的标题
+    scroll-margin-top: 76px;
+  }
+
+  h1 {
+    margin: 0 0 0.9em;
+    padding-bottom: 0.45em;
+    font-size: 27px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    border-bottom: 1px solid $ui-border;
+  }
+
+  // 章节标题左侧加一道主色竖条，长文里更好扫读
+  h2 {
+    margin: 2.1em 0 0.8em;
+    padding-left: 0.55em;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.5;
+    border-left: 4px solid $brand-color;
+  }
+
+  h3 {
+    margin: 1.8em 0 0.6em;
+    font-size: 18.5px;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+
   h4 {
-    // 吸顶导航会挡住锚点跳转后的标题
-    scroll-margin-top: 88px;
+    margin: 1.4em 0 0.5em;
+    font-size: 16.5px;
+    font-weight: 600;
   }
 
+  h5,
+  h6 {
+    margin: 1.2em 0 0.45em;
+    font-size: 15.5px;
+    font-weight: 600;
+  }
+
+  h2 + p,
+  h3 + p,
+  h4 + p {
+    margin-top: 0;
+  }
+
+  /* ---- 段落与列表 ---- */
   p {
-    margin: 0 0 1em;
+    margin: 0 0 1.05em;
   }
 
-  // 宽表格（比如八大排序总表）允许横向滚动，不撑破版面
-  table {
-    display: block;
-    width: 100%;
-    overflow-x: auto;
-    font-size: 15px;
+  ul,
+  ol {
+    margin: 0 0 1.05em;
+    padding-left: 1.45em;
+  }
+
+  li {
+    margin-bottom: 0.38em;
+
+    > ul,
+    > ol {
+      margin: 0.38em 0 0;
+    }
+  }
+
+  li::marker {
+    color: $grey-color;
+  }
+
+  // 篇首那一段算导语，稍微放大一点，把读者带进正文
+  > p:first-of-type {
+    font-size: 1.03em;
+    color: #3b4757;
+  }
+
+  /* ---- 强调与分隔 ---- */
+  strong {
+    font-weight: 600;
+    color: #111827;
+  }
+
+  hr {
+    height: 0;
+    margin: 2.4em 0;
+    border: 0;
+    border-top: 1px solid $ui-border;
+  }
+
+  /* ---- 引用框（每篇里用来放「必背」「易错」这类提醒）---- */
+  blockquote {
+    margin: 1.3em 0;
+    padding: 0.85em 1.1em;
+    font-size: 0.96em;
+    font-style: normal; // 中文不要伪斜体
+    letter-spacing: 0;
+    line-height: 1.75;
+    color: #414b5a;
+    background-color: $quote-bg;
+    border-left: 3px solid #b9cdf4;
+    border-radius: 0 6px 6px 0;
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  /* ---- 行内代码与代码块 ---- */
+  code {
+    padding: 0.12em 0.36em;
+    font-family: $mono-font;
+    font-size: 0.87em;
+    color: #b3283c;
+    background-color: $code-bg;
+    border: 1px solid #eaecf0;
+    border-radius: 4px;
+    word-break: break-word;
   }
 
   pre {
+    margin: 0 0 1.25em;
+    padding: 14px 16px;
+    font-family: $mono-font;
     font-size: 13.5px;
-    line-height: 1.65;
+    line-height: 1.7;
+    text-align: left; // 代码块不跟着两端对齐
+    background-color: $code-bg;
+    border: 1px solid $ui-border;
+    border-radius: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    code {
+      padding: 0;
+      font-size: 1em;
+      color: inherit;
+      background: none;
+      border: 0;
+      border-radius: 0;
+    }
   }
 
+  // Rouge 自带的 #eef / #fff 背景统一换成浅灰（选择器要比 .highlighter-rouge .highlight 更具体）
+  .highlighter-rouge .highlight {
+    margin: 0 0 1.25em;
+    background-color: $code-bg;
+    border: 1px solid $ui-border;
+    border-radius: 8px;
+
+    pre {
+      margin: 0;
+      background: none;
+      border: 0;
+    }
+  }
+
+  // ```text 基本都是 ASCII 图示（┌─┐│├），行高收紧一点，方框竖线的缝隙更小
+  .language-text pre {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* ---- 表格：淡边框 + 斑马纹，宽表横向滚动 ---- */
+  table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 1.4em;
+    overflow-x: auto;
+    font-size: 14.5px;
+    line-height: 1.6;
+    text-align: left;
+    border: 0;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 8px 12px;
+    vertical-align: top;
+    border: 1px solid $ui-border;
+  }
+
+  th {
+    font-weight: 600;
+    white-space: nowrap;
+    background-color: #f6f7f9;
+  }
+
+  tr:nth-child(even) {
+    background-color: #fbfcfd;
+  }
+
+  /* ---- 图片 ---- */
   img {
     max-width: 100%;
+    height: auto;
+    margin: 0.6em 0;
+    border-radius: 6px;
+  }
+
+  /* ---- 正文里的链接：加下划线，扫读时更容易认出可点 ---- */
+  a {
+    color: $brand-color;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(37, 99, 235, 0.35);
+
+    &:hover {
+      text-decoration-color: currentColor;
+    }
   }
 }
 
-/* ---------- 每篇底部的上一篇 / 下一篇 ---------- */
+/* =========================================================
+   文章底部：上一篇 / 下一篇 + 返回目录
+   ========================================================= */
 .post-nav {
   display: flex;
   justify-content: space-between;
-  gap: $spacing-unit * 0.5;
-  margin: $spacing-unit 0;
-  padding-top: $spacing-unit * 0.6;
-  border-top: 1px solid $grey-color-light;
+  gap: 12px;
+  max-width: $reading-width;
+  margin: 40px auto 0;
 
   .post-nav-item {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    max-width: 46%;
+    gap: 3px;
+    max-width: 48%;
+    padding: 12px 16px;
+    border: 1px solid $ui-border;
+    border-radius: 10px;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+
+    &:hover,
+    &:focus {
+      background-color: #fafbfc;
+      border-color: darken($ui-border, 8%);
+      text-decoration: none;
+    }
 
     &.post-nav-next {
-      margin-left: auto;
+      margin-left: auto; // 只有「下一篇」一项时也靠右
       text-align: right;
     }
   }
 
   .post-nav-label {
-    font-size: 13px;
+    font-size: 12.5px;
+    line-height: 1.5;
     color: $grey-color;
   }
 
   .post-nav-title {
+    font-size: 15px;
     font-weight: 600;
+    line-height: 1.5;
+    color: $text-color;
   }
 }
+
+.back-to-index {
+  max-width: $reading-width;
+  margin: 24px auto 0;
+  font-size: 13.5px;
+  text-align: center;
+
+  a {
+    color: $grey-color;
+    text-decoration: none;
+    padding-bottom: 2px;
+    border-bottom: 1px dashed $ui-border;
+
+    &:hover {
+      color: $text-color;
+      border-bottom-color: $text-color;
+    }
+  }
+}
+
+/* ---------- 顶部阅读进度条 ---------- */
+.read-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  z-index: 40;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  background-color: $brand-color;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* =========================================================
+   页脚：一行、轻量
+   ========================================================= */
+.site-footer {
+  padding: 26px 0 34px;
+  font-size: 13px;
+  color: $grey-color;
+  background-color: #fafbfc;
+  border-top: 1px solid $ui-border;
+
+  .site-footer-line {
+    margin: 0;
+    text-align: center;
+    line-height: 1.9;
+  }
+
+  .site-footer-sep {
+    margin: 0 6px;
+    color: #c9ced6;
+  }
+
+  a {
+    color: $grey-color;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 2px;
+
+    &:hover {
+      color: $text-color;
+      text-decoration-color: currentColor;
+    }
+  }
+}
+
+/* =========================================================
+   响应式
+   ========================================================= */
+@include media-query($on-laptop) {
+  .page-content {
+    padding: 36px 0 56px;
+  }
+}
+
+@include media-query($on-palm) {
+  .site-header .wrapper {
+    min-height: 52px;
+  }
+
+  .site-title {
+    font-size: 16px;
+  }
+
+  .page-content {
+    padding: 26px 0 44px;
+  }
+
+  .post-content,
+  .home {
+    font-size: 16px;
+    line-height: 1.8;
+    // 窄屏两端对齐容易拉出大空隙，改回左对齐
+    text-align: left;
+
+    h1 {
+      font-size: 22px;
+    }
+
+    h2 {
+      margin-top: 1.9em;
+      font-size: 19px;
+    }
+
+    h3 {
+      font-size: 17px;
+    }
+
+    h4 {
+      font-size: 16px;
+    }
+
+    pre {
+      padding: 12px 13px;
+      font-size: 12.5px;
+      border-radius: 6px;
+    }
+
+    .language-text pre {
+      font-size: 12px;
+    }
+
+    code {
+      font-size: 0.85em;
+    }
+
+    blockquote {
+      padding: 0.75em 0.95em;
+    }
+
+    table {
+      font-size: 13.5px;
+    }
+
+    th,
+    td {
+      padding: 6px 9px;
+    }
+  }
+
+  .post-nav {
+    flex-direction: column;
+    margin-top: 32px;
+
+    .post-nav-item {
+      max-width: 100%;
+
+      &.post-nav-next {
+        text-align: left;
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@media print {
+  .site-header,
+  .site-footer,
+  .post-nav,
+  .back-to-index,
+  .read-progress {
+    display: none;
+  }
+
+  .post {
+    max-width: none;
+  }
+}
+

@@ -1,5 +1,6 @@
 ---
 title: 第 1 篇：Python 速成
+layout: article
 ---
 # 第 1 篇：Python 速成——看懂后面所有代码所需的最小语法
 

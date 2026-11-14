@@ -1,10 +1,12 @@
 {%- comment -%}
-  根据 _config.yml 里 nav 的顺序，自动生成"上一篇 / 下一篇"。
-  首页（url 为 /）也算一项，所以首页会显示"下一篇 → 01 速成"。
+  文章底部的「上一篇 / 下一篇」：顺序来自 _config.yml 的 reading_order。
+  只有登记在 reading_order 里的页面才会显示（首页、工具类笔记不显示）。
+
+  注意：page.url 里的中文是百分号转义的，所以两边都先 uri_escape 再比较。
 {%- endcomment -%}
-{%- assign nav_items = site.nav -%}
+{%- assign order = site.reading_order -%}
 {%- assign current = nil -%}
-{%- for item in nav_items -%}
+{%- for item in order -%}
   {%- assign item_url = item.url | uri_escape -%}
   {%- if item_url == page.url -%}{%- assign current = forloop.index0 -%}{%- endif -%}
 {%- endfor -%}
@@ -14,17 +16,15 @@
 {%- assign next_i = current | plus: 1 -%}
 <nav class="post-nav" aria-label="篇章导航">
   {%- if current > 0 -%}
-  {%- assign prev = nav_items[prev_i] -%}
+  {%- assign prev = order[prev_i] -%}
   <a class="post-nav-item post-nav-prev" rel="prev" href="{{ prev.url | uri_escape | relative_url }}">
     <span class="post-nav-label">← 上一篇</span>
     <span class="post-nav-title">{{ prev.title }}</span>
   </a>
-  {%- else -%}
-  <span class="post-nav-item"></span>
   {%- endif -%}
 
-  {%- if next_i < nav_items.size -%}
-  {%- assign next = nav_items[next_i] -%}
+  {%- if next_i < order.size -%}
+  {%- assign next = order[next_i] -%}
   <a class="post-nav-item post-nav-next" rel="next" href="{{ next.url | uri_escape | relative_url }}">
     <span class="post-nav-label">下一篇 →</span>
     <span class="post-nav-title">{{ next.title }}</span>

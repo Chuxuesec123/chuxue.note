@@ -3,7 +3,7 @@ title: chuxue.note
 description: 数据结构与 Python · 考前速成笔记
 lang: zh-CN
 
-# 主题：minima —— GitHub Pages 官方支持，自带顶部导航、长文排版与移动端汉堡菜单
+# 主题：minima —— GitHub Pages 官方支持，长文排版与移动端适配都是现成的
 theme: minima
 
 # GitHub Pages 会自动并入默认插件（relative-links / readme-index / default-layout 等），
@@ -12,23 +12,24 @@ plugins:
   - jekyll-seo-tag
   - jekyll-feed
 
-# 顶部导航（首页 + 8 篇）。顺序即"上一篇 / 下一篇"的顺序
-nav:
-  - title: 首页
-    url: /
-  - title: 1 速成
+# 阅读顺序：只用来生成每篇底部的「上一篇 / 下一篇」。
+# 顶部导航不走这里 —— 导航写在 README.md 里（也就是站点首页）。
+# 新增文章时：在 README 的表格里加一行，再在这里加一项（加在这里才会出现在上下篇里）。
+reading_order:
+  - title: 第 1 篇 · Python 速成
     url: /数据结构和python/第1篇-Python速成.html
-  - title: 2 复杂度
+  - title: 第 2 篇 · 复杂度与线性表
     url: /数据结构和python/第2篇-复杂度与线性表.html
-  - title: 3 栈与队列
+  - title: 第 3 篇 · 栈与队列
     url: /数据结构和python/第3篇-栈与队列.html
-  - title: 4 链表
+  - title: 第 4 篇 · 链表
     url: /数据结构和python/第4篇-链表.html
-  - title: 5 二叉树
+  - title: 第 5 篇 · 树与二叉树
     url: /数据结构和python/第5篇-树与二叉树.html
-  - title: 6 图
+  - title: 第 6 篇 · 图
     url: /数据结构和python/第6篇-图.html
-  - title: 7 查找
+  - title: 第 7 篇 · 查找
     url: /数据结构和python/第7篇-查找.html
-  - title: 8 排序
+  - title: 第 8 篇 · 排序
     url: /数据结构和python/第8篇-排序.html
+
