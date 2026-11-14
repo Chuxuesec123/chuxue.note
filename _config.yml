@@ -1,6 +1,6 @@
 # 站点基本信息
 title: chuxue.note
-description: 数据结构与 Python · 考前速成笔记
+description: 数据结构与 Python · 网络安全笔记
 lang: zh-CN
 
 # 主题：minima —— GitHub Pages 官方支持，长文排版与移动端适配都是现成的
@@ -15,21 +15,73 @@ plugins:
 # 阅读顺序：只用来生成每篇底部的「上一篇 / 下一篇」。
 # 顶部导航不走这里 —— 导航写在 README.md 里（也就是站点首页）。
 # 新增文章时：在 README 的表格里加一行，再在这里加一项（加在这里才会出现在上下篇里）。
+# series 相同的条目才会互相连接，换系列不会串到别的教程里。
 reading_order:
   - title: 第 1 篇 · Python 速成
+    series: 数据结构与 Python
     url: /数据结构和python/第1篇-Python速成.html
   - title: 第 2 篇 · 复杂度与线性表
+    series: 数据结构与 Python
     url: /数据结构和python/第2篇-复杂度与线性表.html
   - title: 第 3 篇 · 栈与队列
+    series: 数据结构与 Python
     url: /数据结构和python/第3篇-栈与队列.html
   - title: 第 4 篇 · 链表
+    series: 数据结构与 Python
     url: /数据结构和python/第4篇-链表.html
   - title: 第 5 篇 · 树与二叉树
+    series: 数据结构与 Python
     url: /数据结构和python/第5篇-树与二叉树.html
   - title: 第 6 篇 · 图
+    series: 数据结构与 Python
     url: /数据结构和python/第6篇-图.html
   - title: 第 7 篇 · 查找
+    series: 数据结构与 Python
     url: /数据结构和python/第7篇-查找.html
   - title: 第 8 篇 · 排序
+    series: 数据结构与 Python
     url: /数据结构和python/第8篇-排序.html
+
+  - title: 第 0 篇 · 学习路线与法律边界
+    series: 网络安全
+    url: /网络安全/第0篇-学习路线与法律边界.html
+  - title: 第 1 篇 · 网络与 Web 基础
+    series: 网络安全
+    url: /网络安全/第1篇-网络与Web基础.html
+  - title: 第 2 篇 · 靶场搭建与 Burp 抓包
+    series: 网络安全
+    url: /网络安全/第2篇-靶场搭建与Burp抓包.html
+  - title: 第 3 篇 · 信息收集与攻击面
+    series: 网络安全
+    url: /网络安全/第3篇-信息收集与攻击面.html
+  - title: 第 4 篇 · SQL 注入
+    series: 网络安全
+    url: /网络安全/第4篇-SQL注入.html
+  - title: 第 5 篇 · XSS
+    series: 网络安全
+    url: /网络安全/第5篇-XSS.html
+  - title: 第 6 篇 · CSRF 与 SSRF
+    series: 网络安全
+    url: /网络安全/第6篇-CSRF与SSRF.html
+  - title: 第 7 篇 · 文件上传、文件包含与目录穿越
+    series: 网络安全
+    url: /网络安全/第7篇-文件上传包含与穿越.html
+  - title: 第 8 篇 · 命令执行与 SSTI
+    series: 网络安全
+    url: /网络安全/第8篇-命令执行与SSTI.html
+  - title: 第 9 篇 · 反序列化与组件漏洞
+    series: 网络安全
+    url: /网络安全/第9篇-反序列化与组件漏洞.html
+  - title: 第 10 篇 · 逻辑漏洞与越权
+    series: 网络安全
+    url: /网络安全/第10篇-逻辑漏洞与越权.html
+  - title: 第 11 篇 · SRC 挖洞方法论
+    series: 网络安全
+    url: /网络安全/第11篇-SRC挖洞方法论.html
+  - title: 第 12 篇 · 漏洞报告与沟通
+    series: 网络安全
+    url: /网络安全/第12篇-漏洞报告与沟通.html
+  - title: 附录 · 速查手册
+    series: 网络安全
+    url: /网络安全/附录-速查手册.html
 

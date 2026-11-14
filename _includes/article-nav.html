@@ -1,30 +1,43 @@
 {%- comment -%}
   文章底部的「上一篇 / 下一篇」：顺序来自 _config.yml 的 reading_order。
   只有登记在 reading_order 里的页面才会显示（首页、工具类笔记不显示）。
+  同一 series 内才互相连接，避免数据结构最后一篇的「下一篇」跳到网络安全。
 
   注意：page.url 里的中文是百分号转义的，所以两边都先 uri_escape 再比较。
 {%- endcomment -%}
 {%- assign order = site.reading_order -%}
 {%- assign current = nil -%}
+{%- assign current_series = nil -%}
 {%- for item in order -%}
   {%- assign item_url = item.url | uri_escape -%}
-  {%- if item_url == page.url -%}{%- assign current = forloop.index0 -%}{%- endif -%}
+  {%- if item_url == page.url -%}
+    {%- assign current = forloop.index0 -%}
+    {%- assign current_series = item.series -%}
+  {%- endif -%}
 {%- endfor -%}
 
 {%- if current != nil -%}
 {%- assign prev_i = current | minus: 1 -%}
 {%- assign next_i = current | plus: 1 -%}
-<nav class="post-nav" aria-label="篇章导航">
-  {%- if current > 0 -%}
+{%- assign prev = nil -%}
+{%- assign next = nil -%}
+{%- if current > 0 -%}
   {%- assign prev = order[prev_i] -%}
+  {%- if prev.series != current_series -%}{%- assign prev = nil -%}{%- endif -%}
+{%- endif -%}
+{%- if next_i < order.size -%}
+  {%- assign next = order[next_i] -%}
+  {%- if next.series != current_series -%}{%- assign next = nil -%}{%- endif -%}
+{%- endif -%}
+<nav class="post-nav" aria-label="篇章导航">
+  {%- if prev -%}
   <a class="post-nav-item post-nav-prev" rel="prev" href="{{ prev.url | uri_escape | relative_url }}">
     <span class="post-nav-label">← 上一篇</span>
     <span class="post-nav-title">{{ prev.title }}</span>
   </a>
   {%- endif -%}
 
-  {%- if next_i < order.size -%}
-  {%- assign next = order[next_i] -%}
+  {%- if next -%}
   <a class="post-nav-item post-nav-next" rel="next" href="{{ next.url | uri_escape | relative_url }}">
     <span class="post-nav-label">下一篇 →</span>
     <span class="post-nav-title">{{ next.title }}</span>
